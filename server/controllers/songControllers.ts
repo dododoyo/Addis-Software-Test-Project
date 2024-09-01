@@ -1,57 +1,61 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 
-const getSongs = async (req: Request, res: Response): Promise<void> => {
+import {
+  getSongs,
+  createSong,
+  updateSong,
+  deleteSong,
+} from "../repositories/songRespository";
+
+export const getSongsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
-    // TODO: Implement fetching songs from Database
-    res.status(StatusCodes.OK).json({ msg: "Songs Sent" });
+    const songs = await getSongs();
+    res.status(StatusCodes.OK).json(songs);
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.stack);
-    }
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Internal Server Error" });
-  }
-};
-const createSong = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // TODO: Implement creating songs
-    res.status(StatusCodes.OK).json({ msg: "Song Created" });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.stack);
-    }
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Internal Server Error" });
-  }
-};
-const updateSong = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // TODO: Implement update song data
-    res.status(StatusCodes.OK).json({ msg: "Song Data Updated" });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.stack);
-    }
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Internal Server Error" });
-  }
-};
-const deleteSong = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // TODO: Implement deleting song
-    res.status(StatusCodes.OK).json({ msg: "Song Deleted" });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.stack);
-    }
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ error: "Internal Server Error" });
+    throw new Error();
   }
 };
 
-export { getSongs, createSong, updateSong, deleteSong };
+export const createSongController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const song = await createSong(req.body);
+    res.status(StatusCodes.CREATED).json(song);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateSongController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const song = await updateSong(req.params.id, req.body);
+    res.status(StatusCodes.OK).json(song);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteSongController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    await deleteSong(req.params.id);
+    res.status(StatusCodes.OK).json({ msg: "Song Deleted" });
+  } catch (error) {
+    next(error);
+  }
+};

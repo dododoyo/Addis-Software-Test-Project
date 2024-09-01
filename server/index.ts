@@ -1,20 +1,21 @@
 import "express-async-errors";
-import dotenv from "dotenv";
-dotenv.config();
-import express from "express";
+import express, { Express } from "express";
 import morgan from "morgan";
+import { connect, connection } from "mongoose";
 
 import { songRouter } from "./routes/songRouter";
 import { errorHandlerMiddleware } from "./middleware/errorHandlerMiddleware";
+import config from "./core/app.config";
 
-const app = express();
-if (process.env.NODE_ENV === "development") {
+const app: Express = express();
+
+if (config.nodeEnv === "development") {
   app.use(morgan("dev"));
 }
 
 app.use(express.json());
 
-app.use("/api/v1/song",songRouter);
+app.use("/api/v1/song", songRouter);
 
 app.use("*", (req, res) => {
   res.status(404).json({ msg: "not found" });
@@ -23,11 +24,15 @@ app.use("*", (req, res) => {
 app.use(errorHandlerMiddleware);
 const port = process.env.PORT || 8080;
 
-try {
-  app.listen(port, () => {
-    console.log(`server running on port ${port} . . .`);
+async function main() {
+  connect(config.mongoose.uri, config.mongoose.options);
+  connection.on("connected", () => {
+    console.log(`Database Connected`);
   });
-} catch (error) {
-  console.log(error);
-  process.exit(1);
+
+  app.listen(port, () => {
+    return console.log(`server running on port ${port} . . .`);
+  });
 }
+
+main();
