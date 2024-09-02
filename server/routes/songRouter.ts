@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
-  getSongsController,
+  getAllSongsController,
+  getSongController,
   createSongController,
   updateSongController,
   deleteSongController,
@@ -8,7 +9,8 @@ import {
 
 const songRouter = Router();
 
-songRouter.get("/", getSongsController);
+songRouter.get("/", getAllSongsController);
+songRouter.get("/:id", getSongController);
 songRouter.post("/create", createSongController);
 songRouter.patch("/update/:id", updateSongController);
 songRouter.delete("/delete/:id", deleteSongController);

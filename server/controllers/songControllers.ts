@@ -2,19 +2,20 @@ import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 
 import {
-  getSongs,
+  findSong,
+  getAllSongs,
   createSong,
   updateSong,
   deleteSong,
 } from "../repositories/songRespository";
 
-export const getSongsController = async (
+export const getAllSongsController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const songs = await getSongs();
+    const songs = await getAllSongs();
     res.status(StatusCodes.OK).json(songs);
   } catch (error) {
     throw new Error();
@@ -55,6 +56,18 @@ export const deleteSongController = async (
   try {
     await deleteSong(req.params.id);
     res.status(StatusCodes.OK).json({ msg: "Song Deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
+export const getSongController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const song = await findSong(req.params.id);
+    res.status(StatusCodes.OK).json(song);
   } catch (error) {
     next(error);
   }

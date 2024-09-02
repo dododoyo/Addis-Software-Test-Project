@@ -1,7 +1,7 @@
 import { NotFoundError, ValidationError } from "../errors/errors";
 import { Song } from "../models/song.model";
 
-export const getSongs = async () => {
+export const getAllSongs = async () => {
   try {
     return await Song.find();
   } catch (error) {
@@ -77,5 +77,16 @@ export const deleteSong = async (id: string) => {
     return song;
   } catch (error) {
     throw new Error("Failed to delete song");
+  }
+};
+export const findSong = async (id: string) => {
+  try {
+    const song = await Song.findById(id);
+    if (!song) {
+      throw new NotFoundError("Song not found");
+    }
+    return song;
+  } catch (error) {
+    throw new Error("Failed to find song");
   }
 };

@@ -8,6 +8,7 @@ const songSchema = new mongoose.Schema({
   album: String,
   year: Number,
   genre: String,
+  description: String,
 });
 
 const Song = mongoose.model("Song", songSchema);
