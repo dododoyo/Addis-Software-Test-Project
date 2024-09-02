@@ -24,6 +24,17 @@ export interface SongState {
   songs: Song[];
   song: Song | null;
   loading: boolean;
-  error: string | null;
   songId: string | null;
+
+  fetchSongsSuccess: boolean;
+  fetchSongByIdSuccess: boolean;
+  createSongSuccess: boolean;
+  editSongSuccess: boolean;
+  deleteSongSuccess: boolean;
+
+  fetchSongsError: null | string;
+  fetchSongByIdError: null | string;
+  createSongError: null | string;
+  editSongError: null | string;
+  deleteSongError: null | string;
 }

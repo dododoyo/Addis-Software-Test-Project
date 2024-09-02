@@ -24,7 +24,7 @@ const Transition = React.forwardRef(function Transition(
 import EditButton from "./EditButton";
 import { updateIsDialogOpen } from "../lib/features/dialog/dialogSlice";
 import { SongCardProps } from "../types";
-import { deleteSongStart } from "../lib/services/song/songSlice";
+import { deleteSongStart, updateSongId } from "../lib/services/song/songSlice";
 
 function formatDuration(duration: number): string {
   const minutes = Math.floor(duration / 60);
@@ -37,21 +37,24 @@ const SongCard: React.FC<SongCardProps> = ({ data }) => {
   const isDialogOpen = useAppSelector(
     (state) => state.dialogReducer.value.isDialogOpen
   );
+  const songId = useAppSelector((state) => state.songReducer.songId);
 
   const handleDelete = (id: string) => {
     dispatch(deleteSongStart(id));
   };
 
-  const handleClickOpen = () => {
+  const handleClose = (confirmed: boolean) => {
+    dispatch(updateIsDialogOpen(false));
+    if (confirmed && songId) {
+      handleDelete(songId);
+    }
+  };
+
+  const handleClickOpen = (_id: string) => {
+    dispatch(updateSongId(_id));
     dispatch(updateIsDialogOpen(true));
   };
 
-  const handleClose = (confirmed: boolean) => {
-    dispatch(updateIsDialogOpen(false));
-    if (confirmed) {
-      handleDelete(data._id);
-    }
-  };
   return (
     <div className="border border-gray-400 m-4 rounded-lg shadow-md p-6 transform hover:scale-105 transition duration-200 ease-in-out">
       <div className="flex items-center mb-4">
@@ -64,7 +67,6 @@ const SongCard: React.FC<SongCardProps> = ({ data }) => {
         </div>
         <div className="flex space-x-2">
           <EditButton id={data._id} />
-          {/* DeleteButton  */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -72,7 +74,7 @@ const SongCard: React.FC<SongCardProps> = ({ data }) => {
             strokeWidth={1.5}
             stroke="currentColor"
             className="size-9 text-red-500 cursor-pointer"
-            onClick={handleClickOpen}
+            onClick={() => handleClickOpen(data._id)}
           >
             <path
               strokeLinecap="round"
@@ -105,7 +107,7 @@ const SongCard: React.FC<SongCardProps> = ({ data }) => {
           <span
             key={data.genre}
             className={`inline-block rounded-full border bg-white px-3 py-1 font-semibold mr-2 text-xl ${
-              data.genre === "Afro Beats"
+              data.genre === "Afro Beat"
                 ? "text-yellow-600 border-yellow-600"
                 : "text-violet-600 border-violet-600"
             }`}

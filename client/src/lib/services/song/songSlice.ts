@@ -1,12 +1,23 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Song,SongState } from "../../../types";
+import { Song, SongState } from "../../../types";
 
 const initialState: SongState = {
   songs: [],
   song: null,
   loading: false,
-  error: null,
   songId: null,
+
+  fetchSongsSuccess: false,
+  fetchSongByIdSuccess: false,
+  createSongSuccess: false,
+  editSongSuccess: false,
+  deleteSongSuccess: false,
+
+  fetchSongsError: null,
+  fetchSongByIdError: null,
+  createSongError: null,
+  editSongError: null,
+  deleteSongError: null,
 };
 
 const songSlice = createSlice({
@@ -15,49 +26,75 @@ const songSlice = createSlice({
   reducers: {
     fetchSongsStart(state) {
       state.loading = true;
-      state.error = null;
+      state.fetchSongsError = null;
+      state.fetchSongsSuccess = false;
+      state.fetchSongByIdSuccess = false;
+      state.editSongSuccess = false;
+      state.deleteSongSuccess = false;
+      state.createSongSuccess = false;
     },
     fetchSongsSuccess(state, action: PayloadAction<Song[]>) {
       state.songs = action.payload;
       state.loading = false;
+      state.fetchSongsSuccess = true;
     },
     fetchSongsFailure(state, action: PayloadAction<string>) {
       state.loading = false;
-      state.error = action.payload;
+      state.fetchSongsError = action.payload;
+      state.fetchSongsSuccess = false;
+    },
+    updateSongId(state, action: PayloadAction<string>) {
+      state.songId = action.payload;
     },
 
     fetchSongByIdStart(state, action: PayloadAction<string>) {
       state.loading = true;
-      state.error = null;
+      state.fetchSongByIdError = null;
       state.songId = action.payload;
+      state.fetchSongByIdSuccess = false;
+      state.editSongSuccess = false;
+      state.deleteSongSuccess = false;
+      state.createSongSuccess = false;
     },
     fetchSongByIdSuccess(state, action: PayloadAction<Song>) {
       state.song = action.payload;
       state.loading = false;
+      state.fetchSongByIdSuccess = true;
     },
     fetchSongByIdFailure(state, action: PayloadAction<string>) {
       state.loading = false;
-      state.error = action.payload;
+      state.fetchSongByIdError = action.payload;
+      state.fetchSongByIdSuccess = false;
     },
 
     createSongStart(state, action: PayloadAction<Song>) {
       state.loading = true;
-      state.error = null;
+      state.createSongError = null;
       state.song = action.payload;
+      state.fetchSongByIdSuccess = false;
+      state.editSongSuccess = false;
+      state.deleteSongSuccess = false;
+      state.createSongSuccess = false;
     },
     createSongSuccess(state, action: PayloadAction<Song>) {
       state.songs.push(action.payload);
       state.loading = false;
+      state.createSongSuccess = true;
     },
     createSongFailure(state, action: PayloadAction<string>) {
       state.loading = false;
-      state.error = action.payload;
+      state.createSongError = action.payload;
+      state.createSongSuccess = false;
     },
 
     editSongStart(state, action: PayloadAction<Song>) {
       state.loading = true;
-      state.error = null;
+      state.editSongError = null;
       state.song = action.payload;
+      state.fetchSongByIdSuccess = false;
+      state.editSongSuccess = false;
+      state.deleteSongSuccess = false;
+      state.createSongSuccess = false;
     },
     editSongSuccess(state, action: PayloadAction<Song>) {
       const index = state.songs.findIndex(
@@ -67,30 +104,39 @@ const songSlice = createSlice({
         state.songs[index] = action.payload;
       }
       state.loading = false;
+      state.editSongSuccess = true;
     },
     editSongFailure(state, action: PayloadAction<string>) {
       state.loading = false;
-      state.error = action.payload;
+      state.editSongError = action.payload;
+      state.editSongSuccess = false;
     },
 
     deleteSongStart(state, action: PayloadAction<string>) {
       state.loading = true;
-      state.error = null;
+      state.deleteSongError = null;
       state.songId = action.payload;
+      state.fetchSongByIdSuccess = false;
+      state.editSongSuccess = false;
+      state.deleteSongSuccess = false;
+      state.createSongSuccess = false;
     },
     deleteSongSuccess(state, action: PayloadAction<string>) {
       state.songs = state.songs.filter((song) => song._id !== action.payload);
-      console.log(state.songs)
       state.loading = false;
+      state.deleteSongSuccess = true;
     },
     deleteSongFailure(state, action: PayloadAction<string>) {
       state.loading = false;
-      state.error = action.payload;
+      state.deleteSongError = action.payload;
+      state.deleteSongSuccess = false;
     },
   },
 });
 
 export const {
+  updateSongId,
+
   fetchSongsStart,
   fetchSongsSuccess,
   fetchSongsFailure,

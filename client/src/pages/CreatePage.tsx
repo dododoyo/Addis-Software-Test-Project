@@ -1,4 +1,5 @@
 import React from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import {
@@ -14,7 +15,7 @@ import { createSongStart } from "../lib/services/song/songSlice";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "../lib/store";
 import { Song } from "../types";
-
+import { toast } from "react-toastify";
 const genres = [
   "Afro Beats",
   "Pop",
@@ -34,12 +35,21 @@ const CreatePage: React.FC = () => {
   } = useForm<Song>();
   const dispatch = useDispatch<AppDispatch>();
 
-  const loading = useAppSelector((state) => state.songReducer.loading);
-  const error = useAppSelector((state) => state.songReducer.error);
+  const { loading, createSongError, createSongSuccess } = useAppSelector(
+    (state) => state.songReducer
+  );
 
   const onSubmit: SubmitHandler<Song> = (data) => {
     dispatch(createSongStart(data));
   };
+
+  useEffect(() => {
+    if (createSongSuccess) {
+      toast.success("Song Created Successfully");
+      navigate("/")
+    }
+  }, [createSongSuccess,navigate]);
+
   const handleCancel = () => {
     navigate("/");
   };
@@ -140,7 +150,9 @@ const CreatePage: React.FC = () => {
           </Box>
         )}
       </Box>
-      {error && <Typography color="error">Error: {error}</Typography>}
+      {createSongError && (
+        <Typography color="error">Error: {createSongError}</Typography>
+      )}
     </Container>
   );
 };

@@ -1,6 +1,8 @@
-import { useNavigate, useParams } from "react-router-dom";
 import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
+
 import {
   TextField,
   Button,
@@ -8,15 +10,15 @@ import {
   Typography,
   Box,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+
 import { useAppSelector, AppDispatch } from "../lib/store";
 import {
   fetchSongByIdStart,
   editSongStart,
 } from "../lib/services/song/songSlice";
-
-import EditFormSkeleton from "../components/EditFormSkeleton";
 import { Song } from "../types";
 
 const genres = ["Afro Beat", "Pop", "Jazz", "Rock", "Hip Hop"];
@@ -26,9 +28,9 @@ const EditPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const song = useAppSelector((state) => state.songReducer.song);
-  const loading = useAppSelector((state) => state.songReducer.loading);
-  const error = useAppSelector((state) => state.songReducer.error);
+  const { song, loading, editSongError, editSongSuccess } = useAppSelector(
+    (state) => state.songReducer
+  );
 
   const {
     register,
@@ -59,25 +61,39 @@ const EditPage: React.FC = () => {
       setValue("genre", genre);
     }
   }, [song, setValue]);
+  useEffect(() => {
+    if (editSongSuccess) {
+      toast.success("Song Updated Successfully");
+    }
+  }, [editSongSuccess]);
+
+  useEffect(() => {
+    if (editSongError) {
+      toast.error(`Error: ${editSongError}`);
+      navigate("/");
+    }
+  }, [editSongError, navigate]);
 
   const onSubmit: SubmitHandler<Song> = (data) => {
     const songWithId = { ...data, _id: id || "" };
     dispatch(editSongStart(songWithId));
-    // Redirect or show success
   };
+
   const handleCancel = () => {
     navigate("/");
   };
 
   if (loading) {
-    return <EditFormSkeleton />;
+    return (
+      <Container
+        maxWidth="md"
+        sx={{ display: "flex", justifyContent: "center", mt: 10 }}
+      >
+        <CircularProgress size={80} />
+      </Container>
+    );
   }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  console.log(song);
   return (
     <Container maxWidth="sm">
       <Box

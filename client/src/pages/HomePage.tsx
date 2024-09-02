@@ -11,7 +11,7 @@ import SongCardSkeleton from "../components/SongCardSkeleton";
 const HomePage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { songs, loading, error } = useAppSelector(
+  const { songs, loading, fetchSongsError } = useAppSelector(
     (state) => state.songReducer
   );
 
@@ -19,7 +19,7 @@ const HomePage: React.FC = () => {
     dispatch(fetchSongsStart());
   }, [dispatch]);
 
-  if (error) return <div>Error: {error}</div>;
+  if (fetchSongsError) return <div>Error: {fetchSongsError}</div>;
 
   return (
     <div className="min-h-screen p-8">

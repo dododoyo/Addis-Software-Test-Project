@@ -1,4 +1,6 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import EditPage from "./pages/EditPage";
 import CreatePage from "./pages/CreatePage";
@@ -33,6 +35,7 @@ const App = () => {
   return (
     <ReduxProvider>
       <RouterProvider router={router}></RouterProvider>;
+      <ToastContainer />
     </ReduxProvider>
   );
 };
