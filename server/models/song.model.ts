@@ -11,6 +11,6 @@ const songSchema = new mongoose.Schema({
   description: String,
 });
 
-const Song = mongoose.model("Song", songSchema);
+const Song = mongoose.model("song", songSchema);
 
 export { Song, songSchema };
