@@ -1,5 +1,6 @@
 import React from "react";
-import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch, useAppSelector } from "../lib/store";
 import {
   Dialog,
   DialogActions,
@@ -17,25 +18,13 @@ const Transition = React.forwardRef(function Transition(
   },
   ref: React.Ref<unknown>
 ) {
-  return <Slide direction="up" ref={ref} {...props} />;
+  return <Slide direction="right" ref={ref} {...props} />;
 });
 
 import EditButton from "./EditButton";
-
-export interface SongCardProps {
-  data: SongData;
-}
-export interface SongData {
-  id: number;
-  title: string;
-  artistName: string;
-  duration: number;
-  songArt: string;
-  album: string | null;
-  year: number | null;
-  description: string;
-  genre: string | null;
-}
+import { updateIsDialogOpen } from "../lib/features/dialog/dialogSlice";
+import { SongCardProps } from "../types";
+import { deleteSongStart } from "../lib/services/song/songSlice";
 
 function formatDuration(duration: number): string {
   const minutes = Math.floor(duration / 60);
@@ -44,21 +33,23 @@ function formatDuration(duration: number): string {
 }
 
 const SongCard: React.FC<SongCardProps> = ({ data }) => {
-  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const isDialogOpen = useAppSelector(
+    (state) => state.dialogReducer.value.isDialogOpen
+  );
 
-  const handleDelete = (id: number) => {
-    console.log(`Deleting song with id: ${id}`);
-    // Implement the deletion logic here
+  const handleDelete = (id: string) => {
+    dispatch(deleteSongStart(id));
   };
 
   const handleClickOpen = () => {
-    setOpen(true);
+    dispatch(updateIsDialogOpen(true));
   };
 
   const handleClose = (confirmed: boolean) => {
-    setOpen(false);
+    dispatch(updateIsDialogOpen(false));
     if (confirmed) {
-      handleDelete(data.id);
+      handleDelete(data._id);
     }
   };
   return (
@@ -72,7 +63,7 @@ const SongCard: React.FC<SongCardProps> = ({ data }) => {
           </p>
         </div>
         <div className="flex space-x-2">
-          <EditButton id={data.id} />
+          <EditButton id={data._id} />
           {/* DeleteButton  */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -91,19 +82,20 @@ const SongCard: React.FC<SongCardProps> = ({ data }) => {
           </svg>
         </div>
       </div>
-      <p className="text-gray-700 mb-4">{data.description}</p>
+      <p className="text-gray-700 mb-4">
+        {data.description ? data.description : "Song has no Description"}
+      </p>
       <div className="flex space-x-4">
         {data.album ? (
           <p
-            key={data.genre}
-            className={`inline-block rounded-full border bg-white px-3 py-1 text-md font-semibold mr-2 text-xl text-blue-600 border-blue-600
+            className={`inline-block rounded-full border bg-white px-3 py-1 font-semibold mr-2 text-xl text-blue-600 border-blue-600
             `}
           >
             {data.album}
           </p>
         ) : (
           <p
-            className={`inline-block rounded-full border bg-white px-3 py-1 text-md font-semibold mr-2 text-xl text-green-600 border-green-600`}
+            className={`inline-block rounded-full border bg-white px-3 py-1 font-semibold mr-2 text-xl text-green-600 border-green-600`}
           >
             Single
           </p>
@@ -112,7 +104,7 @@ const SongCard: React.FC<SongCardProps> = ({ data }) => {
         {data.genre && (
           <span
             key={data.genre}
-            className={`inline-block rounded-full border bg-white px-3 py-1 text-md font-semibold mr-2 text-xl ${
+            className={`inline-block rounded-full border bg-white px-3 py-1 font-semibold mr-2 text-xl ${
               data.genre === "Afro Beats"
                 ? "text-yellow-600 border-yellow-600"
                 : "text-violet-600 border-violet-600"
@@ -128,12 +120,14 @@ const SongCard: React.FC<SongCardProps> = ({ data }) => {
         </p>
       </div>
 
-      {/* Material-UI Dialog for confirmation */}
       <Dialog
-        open={open}
+        open={isDialogOpen}
         onClose={() => handleClose(false)}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        BackdropProps={{
+          style: { backgroundColor: "rgba(0, 0, 0, 0.2)" },
+        }}
         TransitionComponent={Transition}
       >
         <DialogTitle id="alert-dialog-title">{"Confirm Deletion"}</DialogTitle>

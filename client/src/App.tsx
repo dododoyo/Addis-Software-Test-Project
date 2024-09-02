@@ -1,13 +1,12 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-
 import EditPage from "./pages/EditPage";
 import CreatePage from "./pages/CreatePage";
 import HomePage from "./pages/HomePage";
 import ErrorPage from "./pages/ErrorPage";
 
-import DefaultLayout from "./pages/DefaultLayout";
-
+import DefaultLayout from "./containers/DefaultLayout";
+import { ReduxProvider } from "./containers/ReduxProvider";
 
 const router = createBrowserRouter([
   {
@@ -31,7 +30,11 @@ const router = createBrowserRouter([
   },
 ]);
 const App = () => {
-  return <RouterProvider router={router}></RouterProvider>;
+  return (
+    <ReduxProvider>
+      <RouterProvider router={router}></RouterProvider>;
+    </ReduxProvider>
+  );
 };
 
 export default App;

@@ -1,11 +1,9 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-interface EditButtonProps {
-  id: number;
-}
-
-const EditButton: React.FC<EditButtonProps> = ({ id }) => {
+const EditButton: React.FC<{
+  id: string;
+}> = ({ id }) => {
   return (
     <NavLink to={`/edit/${id}`}>
       <svg

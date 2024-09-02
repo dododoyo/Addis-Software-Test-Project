@@ -1,77 +1,66 @@
 import React from "react";
-import SongCard from "../components/SongCard";
-import { SongData } from "../components/SongCard";
+import { NavLink } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { AppDispatch, useAppSelector } from "../lib/store";
+import { fetchSongsStart } from "../lib/services/song/songSlice";
 
-const dummySongs: SongData[] = [
-  {
-    id: 1,
-    title: "Song One",
-    artistName: "Abnet Agonafer",
-    duration: 210,
-    songArt: "https://via.placeholder.com/150",
-    album: null,
-    year: 2020,
-    genre: "Afro Beats",
-    description: "This is the first song description.",
-  },
-  {
-    id: 2,
-    title: "Song Two",
-    artistName: "Artist B",
-    duration: 180,
-    songArt: "https://via.placeholder.com/150",
-    album: "Album B",
-    year: 2019,
-    genre: "pop",
-    description: "This is the second song description.",
-  },
-  {
-    id: 3,
-    title: "Song Three",
-    artistName: "Artist C",
-    duration: 240,
-    songArt: "https://via.placeholder.com/150",
-    album: "Album C",
-    year: 2021,
-    genre: "jazz",
-    description: "This is the third song description.",
-  },
-  {
-    id: 4,
-    title: "Song Four",
-    artistName: "Artist D",
-    duration: 200,
-    songArt: "https://via.placeholder.com/150",
-    album: "Album D",
-    year: 2018,
-    genre: "afro",
-    description: "This is the fourth song description.",
-  },
-  {
-    id: 5,
-    title: "Song Five",
-    artistName: "Artist E",
-    duration: 220,
-    songArt: "https://via.placeholder.com/150",
-    album: "Album E",
-    year: 2017,
-    genre: "Afro Beats",
-    description: "This is the fifth song description.",
-  },
-];
+import SongCard from "../components/SongCard";
+import SongCardSkeleton from "../components/SongCardSkeleton";
+
 const HomePage: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { songs, loading, error } = useAppSelector(
+    (state) => state.songReducer
+  );
+
+  useEffect(() => {
+    dispatch(fetchSongsStart());
+  }, [dispatch]);
+
+  if (error) return <div>Error: {error}</div>;
+
   return (
     <div className="min-h-screen p-8">
       <div className="container mx-auto">
-        <div className="flex justify-between my-4 mx-6">
+        <div className="flex justify-between items-center my-4 mx-6">
           <h1 className="text-5xl font-bold text-gray-800">Songs</h1>
+          <NavLink to="/create">
+            <button className="flex items-center font-medium text-green-500 px-4 text-2xl rounded">
+              Add Song
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="ml-2 size-8"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                />
+              </svg>
+            </button>
+          </NavLink>
         </div>
-
-        <div className="grid grid-cols-2 gap-1">
-          {dummySongs.map((data) => (
-            <SongCard data={data} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="grid grid-cols-1 gap-1 md:grid-cols-2">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <SongCardSkeleton key={index} />
+            ))}
+          </div>
+        ) : songs && songs.length > 0 ? (
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            {songs.map((data, index) => (
+              <SongCard key={index} data={data} />
+            ))}
+          </div>
+        ) : (
+          <h1 className="text-3xl text-center my-20">No Songs to display</h1>
+        )}
       </div>
     </div>
   );
