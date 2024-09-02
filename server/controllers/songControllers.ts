@@ -55,7 +55,7 @@ export const deleteSongController = async (
 ): Promise<void> => {
   try {
     await deleteSong(req.params.id);
-    res.status(StatusCodes.OK).json({ msg: "Song Deleted" });
+    res.status(StatusCodes.OK).json({ msg: "Song Deleted", id: req.params.id });
   } catch (error) {
     next(error);
   }
