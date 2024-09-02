@@ -122,5 +122,3 @@ server/
 - **Redux Toolkit**: To manage the state of the app.
 - **Redux Saga**: To make calls to the REST API.
 - **Emotion, Tailwind, and Styled System**: To style the app.
-
-For more details, refer to the individual README files in the [`client`] and [`server`] directories.
