@@ -1,6 +1,8 @@
-# Addis Software Test Project
+# Addis Software Test Project 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/3bb05a17-dea6-47c3-b099-180baf7c1445/deploy-status)](https://app.netlify.com/sites/addis-song/deploys)
 
 This is a full-stack application that displays a list of songs and allows users to create, update, and delete songs.
+
 
 ## Project Overview
 
